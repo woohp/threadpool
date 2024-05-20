@@ -6,6 +6,10 @@
 template <typename T>
 struct blocked_range : public std::pair<T, T>
 {
+    blocked_range<T>(const T& first, const T& second)
+        : std::pair<T, T>(first, second)
+    { }
+
     T begin() const
     {
         return this->first;
@@ -28,7 +32,7 @@ private:
     // synchronization
     std::mutex queue_mutex;
     std::condition_variable condition;
-    bool stop = false;
+    bool stop = false;  // Flag to indicate if the pool has been stopped
 
 public:
     thread_pool(size_t threads = 0)
@@ -99,7 +103,7 @@ public:
     {
         if (end - start < 2)
         {
-            for (Indecx i = start; i < end; i++)
+            for (Index i = start; i < end; i++)
                 f(blocked_range<Index>(i, i + 1), 0);
             return;
         }
