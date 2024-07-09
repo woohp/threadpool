@@ -99,17 +99,18 @@ public:
     }
 
     template <typename Index, typename Function>
-    void parallel_for(Index start, Index end, Function&& f)
+    void parallel_for(Index start, std::type_identity_t<Index> end, Function&& f)
     {
-        if (end - start < 2)
+        const auto length = end - start;
+        if (length < 2)
         {
             for (Index i = start; i < end; i++)
                 f(blocked_range<Index>(i, i + 1), 0);
             return;
         }
 
-        const auto block_size = (end - start) / this->workers.size();
-        auto leftover = (end - start) - block_size * this->workers.size();
+        const auto block_size = length / this->workers.size();
+        auto leftover = length - block_size * this->workers.size();
 
         std::vector<std::future<void>> futures;
 
@@ -145,7 +146,7 @@ public:
     }
 
     template <typename Index, typename Function>
-    void parallel_for_each(Index start, Index end, Function&& f)
+    void parallel_for_each(Index start, std::type_identity_t<Index> end, Function&& f)
     {
         auto block_f = [&f](blocked_range<Index> range, size_t thread_idx) {
             for (; range.first < range.second; range.first++)

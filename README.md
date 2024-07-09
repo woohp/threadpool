@@ -7,6 +7,6 @@ View [example](./example.cpp)
 Compile and run:
 
 ```sh
-g++ -std=c++17 example.cpp
+g++ -std=c++20 example.cpp
 ./a.out
 ```
